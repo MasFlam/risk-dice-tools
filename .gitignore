@@ -1,0 +1,4 @@
+# emscripten build artifacts:
+/riskdice.js
+/riskdice.wasm
+/riskdice.html

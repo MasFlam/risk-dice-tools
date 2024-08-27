@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Risk Dice</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script type="text/javascript" src="./riskdice.js"></script>
+	<script type="text/javascript" src="./index.js"></script>
+</head>
+<body>
+	<h1>Risk Dice Tools</h1>
+	
+	<div style="width: 30em;">
+		<h2>Troops Needed Calculator</h2>
+		<label>Defending stack: <input type="number" step="1" min="1" value="1" id="tool1-defending"></label>
+		<br>
+		<label>Wanted probability: <input type="number" step="0.01" min="0.01" max="1.00" value="1.00" id="tool1-wanted"></label>
+		<br>
+		<label>Defending capital? <input type="checkbox" id="tool1-capital"></label>
+		<br>
+		<label>Balanced blitz? <input type="checkbox" id="tool1-balanced" checked></label>
+		<br>
+		<button id="tool1-submit">Calculate</button>
+		<br>
+		Attacking stack needed: <span id="tool1-result">???</span>
+		<div style="width: 100%;"><canvas id="tool1-chart-att"></canvas></div>
+		<div style="width: 100%;"><canvas id="tool1-chart-def"></canvas></div>
+	</div>
+	
+	<div style="width: 30em;">
+		<h2>Battle Calculator</h2>
+		<label>Attacking stack: <input type="number" step="1" min="1" value="1" id="tool2-attacking"></label>
+		<br>
+		<label>Defending stack: <input type="number" step="1" min="1" value="1" id="tool2-defending"></label>
+		<br>
+		<label>Defending capital? <input type="checkbox" id="tool2-capital"></label>
+		<br>
+		<label>Balanced blitz? <input type="checkbox" id="tool2-balanced" checked></label>
+		<br>
+		<button id="tool2-submit">Calculate</button>
+		<br>
+		Attacking stack needed: <span id="tool2-result">???</span>
+		<div style="width: 100%;"><canvas id="tool2-chart-att"></canvas></div>
+		<div style="width: 100%;"><canvas id="tool2-chart-def"></canvas></div>
+	</div>
+	
+	<!--
+	<table>
+		<tr>
+			<td>Attacker troops: <input type="number" style="width: 5em;" id="att_troops"></td>
+			<td>Defender troops: <input type="number" style="width: 5em;" id="def_troops"></td>
+			<td><label><input type="checkbox" id="capital_checkbox"> Capital?</label></td>
+		</tr>
+		<tr>
+			<td><input type="range" min="1" max="1000" value="10" id="att_troops_range"></td>
+			<td><input type="range" min="1" max="1000" value="10" id="def_troops_range"></td>
+		</tr>
+	</table>
+	
+	<div>P(Attacker wins) = <span id="att_win_prob"></span></div>
+	<div>P(Defender wins) = <span id="def_win_prob"></span></div>
+	
+	<div style="width: 75vw;"><canvas id="distribs_canvas"></canvas></div>
+	<script>
+		/*Module().then(mod => {
+			let res = calc_battle_distrib(mod, 1000, 1200, false);
+			console.log(res);
+			
+			let att_range = document.getElementById("att_troops_range");
+			let def_range = document.getElementById("def_troops_range");
+			let cap_checkbox = document.getElementById("capital_checkbox");
+			
+			att_range.addEventListener("change", evt => {
+				update_charts(mod);
+			});
+			def_range.addEventListener("change", evt => {
+				update_charts(mod);
+			});
+			cap_checkbox.addEventListener("change", evt => {
+				update_charts(mod);
+			});
+		});*/
+	</script>
+	-->
+</body>
+</html>
