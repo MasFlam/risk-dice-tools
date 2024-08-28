@@ -12,7 +12,7 @@ the WASM module can't allocate enough memory for its calculations.
 ## Building
 
 The tools rely a WASM module for all the underlying calculations, which you have to compile using Emscripten.
-So first of all, make sure you have (Emscripten SDK)[https://emscripten.org/docs/getting_started/downloads.html] installed and configured properly.
+So first of all, make sure you have [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html) installed and configured properly.
 Then, just run `make compile` and it should compile the C code into `site/riskdice.wasm` and the accompanyig `site/riskdice.js`.
 And you're done. The entire website can be statically hosted, no APIs on the server side; all the computation happens in the browser window.
 
