@@ -1,6 +1,6 @@
 # Risk Dice Tools
 
-(Risk Dice Tools)[https://riskdice.masflam.com] is collection of tools for use with the *Risk: Global Domination* board game.
+[Risk Dice Tools](https://riskdice.masflam.com) is collection of tools for use with the *Risk: Global Domination* board game.
 These calculators can analyze battles potentially involving capitals, using both
 True Random and Balanced Blitz dice modes. The math behind them is exactly
 the same as that used in the video game adaptation by SMG Studios. The only difference
