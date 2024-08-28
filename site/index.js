@@ -2,13 +2,15 @@
 
 function trimAlmostZeros(data) {
 	const n = data.length;
+	const maxprob = Math.max(...data);
+	const cutoff = 0.0001 * maxprob;
 	let i = 0;
-	while (i < n - 1 && data[i] < 0.0001) {
+	while (i < n - 1 && data[i] < cutoff) {
 		++i;
 	}
 	data.splice(0, i);
 	let j = 0;
-	while (data.length > 1 && data[data.length - 1] < 0.0001) {
+	while (data.length > 1 && data[data.length - 1] < cutoff) {
 		data.pop();
 		++j;
 	}
