@@ -1,4 +1,6 @@
 # emscripten build artifacts:
-/riskdice.js
-/riskdice.wasm
-/riskdice.html
+site/riskdice.js
+site/riskdice.wasm
+
+# deployment artifacts:
+website.tar.gz

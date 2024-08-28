@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Risk Dice</title>
+	<link rel="stylesheet" type="text/css" href="/style.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script type="text/javascript" src="./riskdice.js"></script>
+	<script type="text/javascript" src="./index.js"></script>
+</head>
+<body>
+	<h1 style="text-align: center;">Risk Dice Tools</h1>
+	
+	<p style="max-width: 50em; margin-left: auto; margin-right: auto; text-align: justify;">
+		This is a collection of tools for use with the <em>Risk: Global Domination</em> board game.
+		These calculators can analyze battles potentially involving capitals, using both
+		True Random and Balanced Blitz dice modes. The math behind them is exactly
+		the same as that used in the video game adaptation by SMG Studios. The only difference
+		being that SMG Risk approximates the underlying true random dice roll distributions for
+		Balance Blitz, whereas these tools do not. That's why they can fail on large inputs.
+		More precisely, when (<i>attacking troops</i> &times; <i>defending troops</i>) is too large,
+		the WASM module can't allocate enough memory for its calculations.
+	</p>
+	
+	<div style="text-align: center; margin-bottom: 1em;">
+		<a href="https://buymeacoffee.com/masflam">Donate</a>
+		&bullet;
+		<a href="https://links.masflam.com">Author</a>
+		&bullet;
+		<a href="https://github.com/MasFlam/risk-dice-tools">Source Code</a>
+	</div>
+	
+	<div class="calcbox">
+		<div class="tool">
+			<h2>Troops Needed Calculator</h2>
+			
+			<table>
+				<tr>
+					<td><input type="number" step="1" min="1" value="1" id="tool1-defending"></td>
+					<td>Defending stack</td>
+				</tr>
+				<tr>
+					<td><input type="number" step="0.01" min="0.01" max="1.00" value="1.00" id="tool1-wanted"></td>
+					<td>Wanted probability</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" id="tool1-capital"></td>
+					<td>Defending capital?</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" id="tool1-balanced" checked></td>
+					<td>Balanced blitz?</td>
+				</tr>
+			</table>
+			
+			<button id="tool1-submit">Calculate</button>
+			
+			<div style="text-align: center;">Attacking stack needed:</div>
+			<h3 id="tool1-result">???</h3>
+			
+			<div class="toolchart"><canvas id="tool1-chart-att"></canvas></div>
+			<div class="toolchart"><canvas id="tool1-chart-def"></canvas></div>
+		</div>
+		
+		<div class="tool">
+			<h2>Battle Calculator</h2>
+			
+			<table>
+				<tr>
+					<td><input type="number" step="1" min="2" value="9" id="tool2-attacking"></td>
+					<td>Attacking stack</td>
+				</tr>
+				<tr>
+					<td><input type="number" step="1" min="1" value="4" id="tool2-defending"></td>
+					<td>Defending stack</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" id="tool2-capital"></td>
+					<td>Defending capital?</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" id="tool2-balanced" checked></td>
+					<td>Balanced blitz?</td>
+				</tr>
+			</table>
+			
+			<button id="tool2-submit">Calculate</button>
+			
+			<div style="text-align: center;">Probability of attacker victory:</div>
+			<h3 id="tool2-prob">???</h3>
+			
+			<div class="toolchart"><canvas id="tool2-chart-att"></canvas></div>
+			<div class="toolchart"><canvas id="tool2-chart-def"></canvas></div>
+		</div>
+	</div>
+</body>
+</html>
