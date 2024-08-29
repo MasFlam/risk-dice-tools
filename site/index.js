@@ -86,6 +86,8 @@ class RiskDice {
 	}
 };
 
+// Also returns the average troop loss (not counting the case when the side doesn't win),
+// Or "N/A" when the side never wins.
 function presentBattleChart(distrib, chart, isAttacking) {
 	chart.options.scales = {
 		y: {
@@ -98,9 +100,21 @@ function presentBattleChart(distrib, chart, isAttacking) {
 	};
 	
 	const data = isAttacking ? distrib.attackerTroopLossProbs : distrib.defenderTroopLossProbs;
-	data.pop();
-	const dataStart = trimAlmostZeros(data)[0];
+	const popped = data.pop(); // remove case when the side doesn't win
 	
+	let averageLoss = 0.0;
+	let sumProbs = 0.0;
+	for (let loss = 0; loss < data.length; ++loss) {
+		averageLoss += loss * data[loss];
+		sumProbs += data[loss];
+	}
+	averageLoss /= sumProbs;
+	
+	if (Math.abs(1.0 - popped) <= Number.EPSILON) {
+		averageLoss = "N/A";
+	}
+	
+	const dataStart = trimAlmostZeros(data)[0];
 	const labels = new Array(data.length);
 	for (let i = 0; i < labels.length; ++i) {
 		labels[i] = `${dataStart + i}`;
@@ -114,6 +128,8 @@ function presentBattleChart(distrib, chart, isAttacking) {
 			data: data,
 		},
 	];
+	
+	return averageLoss;
 }
 
 class TroopsNeededCalc {
@@ -127,6 +143,8 @@ class TroopsNeededCalc {
 		this.inpBalanced = document.getElementById(`${idPrefix}-balanced`);
 		this.btnSubmit = document.getElementById(`${idPrefix}-submit`);
 		this.spanResult = document.getElementById(`${idPrefix}-result`);
+		this.spanAvgAtt = document.getElementById(`${idPrefix}-avg-att`);
+		this.spanAvgDef = document.getElementById(`${idPrefix}-avg-def`);
 		this.canvasChartAtt = document.getElementById(`${idPrefix}-chart-att`);
 		this.canvasChartDef = document.getElementById(`${idPrefix}-chart-def`);
 		
@@ -202,8 +220,8 @@ class TroopsNeededCalc {
 		
 		const result = this.dice.calcBattleDistrib(q, defending, capital, zombie, balanced);
 		
-		presentBattleChart(result, this.chartAtt, true);
-		presentBattleChart(result, this.chartDef, false);
+		this.spanAvgAtt.innerText = presentBattleChart(result, this.chartAtt, true);
+		this.spanAvgDef.innerText = presentBattleChart(result, this.chartDef, false);
 		
 		this.chartAtt.update();
 		this.chartDef.update();
@@ -221,6 +239,8 @@ class BattleCalc {
 		this.inpBalanced = document.getElementById(`${idPrefix}-balanced`);
 		this.btnSubmit = document.getElementById(`${idPrefix}-submit`);
 		this.spanProb = document.getElementById(`${idPrefix}-prob`);
+		this.spanAvgAtt = document.getElementById(`${idPrefix}-avg-att`);
+		this.spanAvgDef = document.getElementById(`${idPrefix}-avg-def`);
 		this.canvasChartAtt = document.getElementById(`${idPrefix}-chart-att`);
 		this.canvasChartDef = document.getElementById(`${idPrefix}-chart-def`);
 		
@@ -275,8 +295,8 @@ class BattleCalc {
 		
 		this.spanProb.innerText = result.attackerVictoryProb;
 		
-		presentBattleChart(result, this.chartAtt, true);
-		presentBattleChart(result, this.chartDef, false);
+		this.spanAvgAtt.innerText = presentBattleChart(result, this.chartAtt, true);
+		this.spanAvgDef.innerText = presentBattleChart(result, this.chartDef, false);
 		
 		this.chartAtt.update();
 		this.chartDef.update();

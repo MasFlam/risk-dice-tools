@@ -2,10 +2,10 @@
 <html>
 <head>
 	<title>Risk Dice</title>
-	<link rel="stylesheet" type="text/css" href="/style.css">
+	<link rel="stylesheet" type="text/css" href="/style.css?v=1.0.0">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script type="text/javascript" src="./riskdice.js"></script>
-	<script type="text/javascript" src="./index.js"></script>
+	<script type="text/javascript" src="./riskdice.js?v=1.0.0"></script>
+	<script type="text/javascript" src="./index.js?v=1.0.0"></script>
 </head>
 <body>
 	<h1 style="text-align: center;">Risk Dice Tools</h1>
@@ -61,6 +61,12 @@
 			<div style="text-align: center;">Attacking stack needed:</div>
 			<h3 id="tool1-result">???</h3>
 			
+			<div style="text-align: center;">Average attacker troop loss on victory:</div>
+			<h3 id="tool1-avg-att">???</h3>
+			
+			<div style="text-align: center;">Average defender troop loss on victory:</div>
+			<h3 id="tool1-avg-def">???</h3>
+			
 			<div class="toolchart"><canvas id="tool1-chart-att"></canvas></div>
 			<div class="toolchart"><canvas id="tool1-chart-def"></canvas></div>
 		</div>
@@ -95,6 +101,12 @@
 			
 			<div style="text-align: center;">Probability of attacker victory:</div>
 			<h3 id="tool2-prob">???</h3>
+			
+			<div style="text-align: center;">Average attacker troop loss on victory:</div>
+			<h3 id="tool2-avg-att">???</h3>
+			
+			<div style="text-align: center;">Average defender troop loss on victory:</div>
+			<h3 id="tool2-avg-def">???</h3>
 			
 			<div class="toolchart"><canvas id="tool2-chart-att"></canvas></div>
 			<div class="toolchart"><canvas id="tool2-chart-def"></canvas></div>
