@@ -20,6 +20,7 @@ typedef struct BattleConfig {
 	int att_troops;
 	int def_troops;
 	int is_capital;
+	int is_zombie;
 } BattleConfig;
 
 typedef struct BattleDistrib {
@@ -39,7 +40,7 @@ typedef struct BalanceConfig {
 } BalanceConfig;
 
 EXPORTED
-RollOutcome calc_roll_outcome(int att_dice_count, int def_dice_count, int *att_dice, int *def_dice);
+RollOutcome calc_roll_outcome(int att_dice_count, int def_dice_count, int *att_dice, int *def_dice, int is_zombie);
 
 [[nodiscard]]
 EXPORTED
@@ -47,7 +48,7 @@ RollDistrib *malloc_roll_distrib();
 
 [[nodiscard]]
 EXPORTED
-RollDistrib calc_roll_distrib(int att_dice_count, int def_dice_count);
+RollDistrib calc_roll_distrib(int att_dice_count, int def_dice_count, int is_zombie);
 
 EXPORTED
 void destroy_roll_distrib(RollDistrib *distrib);

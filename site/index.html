@@ -30,7 +30,7 @@
 	</div>
 	
 	<div class="calcbox">
-		<div class="tool">
+		<div class="tool" id="troops-needed-calc">
 			<h2>Troops Needed Calculator</h2>
 			
 			<table>
@@ -47,6 +47,10 @@
 					<td>Defending capital?</td>
 				</tr>
 				<tr>
+					<td><input type="checkbox" id="tool1-zombie"></td>
+					<td>Zombie defending?</td>
+				</tr>
+				<tr>
 					<td><input type="checkbox" id="tool1-balanced" checked></td>
 					<td>Balanced blitz?</td>
 				</tr>
@@ -61,7 +65,7 @@
 			<div class="toolchart"><canvas id="tool1-chart-def"></canvas></div>
 		</div>
 		
-		<div class="tool">
+		<div class="tool" id="battle-calc">
 			<h2>Battle Calculator</h2>
 			
 			<table>
@@ -76,6 +80,10 @@
 				<tr>
 					<td><input type="checkbox" id="tool2-capital"></td>
 					<td>Defending capital?</td>
+				</tr>
+				<tr>
+					<td><input type="checkbox" id="tool2-zombie"></td>
+					<td>Zombie defending?</td>
 				</tr>
 				<tr>
 					<td><input type="checkbox" id="tool2-balanced" checked></td>

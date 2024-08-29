@@ -17,7 +17,8 @@ static inline void sortints(int *arr, int n) {
 	}
 }
 
-RollOutcome calc_roll_outcome(int att_dice_count, int def_dice_count, int *att_dice, int *def_dice) {
+RollOutcome calc_roll_outcome(int att_dice_count, int def_dice_count, int *att_dice, int *def_dice, int is_zombie) {
+	const int zombie = is_zombie != 0;
 	RollOutcome outcome = {0, 0};
 	
 	int att[att_dice_count];
@@ -32,7 +33,8 @@ RollOutcome calc_roll_outcome(int att_dice_count, int def_dice_count, int *att_d
 	int n = att_dice_count > def_dice_count ? def_dice_count : att_dice_count;
 	
 	for (int i = 0; i < n; ++i) {
-		if (att[att_dice_count - 1 - i] > def[def_dice_count - 1 - i]) {
+		// Zombies just lose ties defending, they attack the same
+		if (att[att_dice_count - 1 - i] + zombie > def[def_dice_count - 1 - i]) {
 			++outcome.def_loss;
 		} else {
 			++outcome.att_loss;
@@ -46,7 +48,7 @@ RollDistrib *malloc_roll_distrib() {
 	return (RollDistrib *) malloc(sizeof(RollDistrib));
 }
 
-RollDistrib calc_roll_distrib(int att_dice_count, int def_dice_count) {
+RollDistrib calc_roll_distrib(int att_dice_count, int def_dice_count, int is_zombie) {
 	const int n = att_dice_count;
 	const int m = def_dice_count;
 	
@@ -68,7 +70,7 @@ RollDistrib calc_roll_distrib(int att_dice_count, int def_dice_count) {
 		for (int i = 0; i < m; ++i) def[i] = 1;
 		
 		while (1) {
-			RollOutcome outcome = calc_roll_outcome(n, m, att, def);
+			RollOutcome outcome = calc_roll_outcome(n, m, att, def, is_zombie);
 			distrib.outcomes[outcome.def_loss] = outcome;
 			++distrib.counts[outcome.def_loss];
 			++distrib.counts_sum;
@@ -119,6 +121,7 @@ BattleDistrib calc_battle_distrib(const BattleConfig *config) {
 	const int n = config->att_troops;
 	const int m = config->def_troops;
 	const int capital = config->is_capital != 0;
+	const int zombie = config->is_zombie != 0;
 	
 	BattleDistrib distrib = {
 		.att_troops = n,
@@ -133,91 +136,159 @@ BattleDistrib calc_battle_distrib(const BattleConfig *config) {
 	#define DP(i, j) dp[(i) * (m + 1) + (j)]
 	double *dp = calloc((n + 1) * (m + 1), sizeof(double));
 	
+	// Hard coded and ugly, but fast. (presumably)
+	
+	#define DICEROLL_3v3(i, j) \
+		do { \
+			if (zombie) { \
+				DP((i) - 0, (j) - 3) += (17871.0 / 46656.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 2) += (12348.0 / 46656.0) * DP((i), (j)); \
+				DP((i) - 2, (j) - 1) += (10017.0 / 46656.0) * DP((i), (j)); \
+				DP((i) - 3, (j) - 0) += ( 6420.0 / 46656.0) * DP((i), (j)); \
+			} else { \
+				DP((i) - 0, (j) - 3) += ( 6420.0 / 46656.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 2) += (10017.0 / 46656.0) * DP((i), (j)); \
+				DP((i) - 2, (j) - 1) += (12348.0 / 46656.0) * DP((i), (j)); \
+				DP((i) - 3, (j) - 0) += (17871.0 / 46656.0) * DP((i), (j)); \
+			} \
+		} while (0)
+	
+	#define DICEROLL_3v2(i, j) \
+		do { \
+			if (zombie) { \
+				DP((i) - 0, (j) - 2) += (4816.0 / 7776.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 1) += (1981.0 / 7776.0) * DP((i), (j)); \
+				DP((i) - 2, (j) - 0) += ( 979.0 / 7776.0) * DP((i), (j)); \
+			} else { \
+				DP((i) - 0, (j) - 2) += (2890.0 / 7776.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 1) += (2611.0 / 7776.0) * DP((i), (j)); \
+				DP((i) - 2, (j) - 0) += (2275.0 / 7776.0) * DP((i), (j)); \
+			} \
+		} while (0)
+	
+	#define DICEROLL_3v1(i, j) \
+		do { \
+			if (zombie) { \
+				DP((i) - 0, (j) - 1) += (1071.0 / 1296.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 0) += ( 225.0 / 1296.0) * DP((i), (j)); \
+			} else { \
+				DP((i) - 0, (j) - 1) += (855.0 / 1296.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 0) += (441.0 / 1296.0) * DP((i), (j)); \
+			} \
+		} while (0)
+	
+	#define DICEROLL_2v3(i, j) \
+		do { \
+			if (zombie) { \
+				DP((i) - 0, (j) - 2) += (2275.0 / 7776.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 1) += (2611.0 / 7776.0) * DP((i), (j)); \
+				DP((i) - 2, (j) - 0) += (2890.0 / 7776.0) * DP((i), (j)); \
+			} else { \
+				DP((i) - 0, (j) - 2) += ( 979.0 / 7776.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 1) += (1981.0 / 7776.0) * DP((i), (j)); \
+				DP((i) - 2, (j) - 0) += (4816.0 / 7776.0) * DP((i), (j)); \
+			} \
+		} while (0)
+	
+	#define DICEROLL_2v2(i, j) \
+		do { \
+			if (zombie) { \
+				DP((i) - 0, (j) - 2) += (581.0 / 1296.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 1) += (420.0 / 1296.0) * DP((i), (j)); \
+				DP((i) - 2, (j) - 0) += (295.0 / 1296.0) * DP((i), (j)); \
+			} else { \
+				DP((i) - 0, (j) - 2) += (295.0 / 1296.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 1) += (420.0 / 1296.0) * DP((i), (j)); \
+				DP((i) - 2, (j) - 0) += (581.0 / 1296.0) * DP((i), (j)); \
+			} \
+		} while (0)
+	
+	#define DICEROLL_2v1(i, j) \
+		do { \
+			if (zombie) { \
+				DP((i) - 0, (j) - 1) += (161.0 / 216.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 0) += ( 55.0 / 216.0) * DP((i), (j)); \
+			} else { \
+				DP((i) - 0, (j) - 1) += (125.0 / 216.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 0) += ( 91.0 / 216.0) * DP((i), (j)); \
+			} \
+		} while (0)
+	
+	#define DICEROLL_1v3(i, j) \
+		do { \
+			if (zombie) { \
+				DP((i) - 0, (j) - 1) += (441.0 / 1296.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 0) += (855.0 / 1296.0) * DP((i), (j)); \
+			} else { \
+				DP((i) - 0, (j) - 1) += ( 225.0 / 1296.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 0) += (1071.0 / 1296.0) * DP((i), (j)); \
+			} \
+		} while (0)
+	
+	#define DICEROLL_1v2(i, j) \
+		do { \
+			if (zombie) { \
+				DP((i) - 0, (j) - 1) += ( 91.0 / 216.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 0) += (125.0 / 216.0) * DP((i), (j)); \
+			} else { \
+				DP((i) - 0, (j) - 1) += ( 55.0 / 216.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 0) += (161.0 / 216.0) * DP((i), (j)); \
+			} \
+		} while (0)
+	
+	#define DICEROLL_1v1(i, j) \
+		do { \
+			if (zombie) { \
+				DP((i) - 0, (j) - 1) += (21.0 / 36.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 0) += (15.0 / 36.0) * DP((i), (j)); \
+			} else { \
+				DP((i) - 0, (j) - 1) += (15.0 / 36.0) * DP((i), (j)); \
+				DP((i) - 1, (j) - 0) += (21.0 / 36.0) * DP((i), (j)); \
+			} \
+		} while (0)
+	
 	DP(n, m) = 1.0;
 	
 	for (int i = n; i >= 3; --i) {
 		for (int j = m; j >= 2 + capital; --j) {
 			if (capital) {
-				// 3v3 dice roll
-				DP(i - 0, j - 3) += ( 6420.0 / 46656.0) * DP(i, j);
-				DP(i - 1, j - 2) += (10017.0 / 46656.0) * DP(i, j);
-				DP(i - 2, j - 1) += (12348.0 / 46656.0) * DP(i, j);
-				DP(i - 3, j - 0) += (17871.0 / 46656.0) * DP(i, j);
+				DICEROLL_3v3(i, j);
 			} else {
-				// 3v2 dice roll
-				DP(i - 0, j - 2) += (2890.0 / 7776.0) * DP(i, j);
-				DP(i - 1, j - 1) += (2611.0 / 7776.0) * DP(i, j);
-				DP(i - 2, j - 0) += (2275.0 / 7776.0) * DP(i, j);
+				DICEROLL_3v2(i, j);
 			}
 		}
 		if (capital) {
-			// 3v2 dice roll
-			int j = 2;
-			DP(i - 0, j - 2) += (2890.0 / 7776.0) * DP(i, j);
-			DP(i - 1, j - 1) += (2611.0 / 7776.0) * DP(i, j);
-			DP(i - 2, j - 0) += (2275.0 / 7776.0) * DP(i, j);
+			DICEROLL_3v2(i, 2);
 		}
-		{
-			// 3v1 dice roll
-			int j = 1;
-			DP(i - 0, j - 1) += (855.0 / 1296.0) * DP(i, j);
-			DP(i - 1, j - 0) += (441.0 / 1296.0) * DP(i, j);
-		}
+		DICEROLL_3v1(i, 1);
 	}
 	{
 		int i = 2;
 		for (int j = m; j >= 2 + capital; --j) {
 			if (capital) {
-				// 2v3 dice roll
-				DP(i - 0, j - 2) += (2275.0 / 7776.0) * DP(i, j);
-				DP(i - 1, j - 1) += (2611.0 / 7776.0) * DP(i, j);
-				DP(i - 2, j - 0) += (2890.0 / 7776.0) * DP(i, j);
+				DICEROLL_2v3(i, j);
 			} else {
-				// 2v2 dice roll
-				DP(i - 0, j - 2) += (295.0 / 1296.0) * DP(i, j);
-				DP(i - 1, j - 1) += (420.0 / 1296.0) * DP(i, j);
-				DP(i - 2, j - 0) += (581.0 / 1296.0) * DP(i, j);
+				DICEROLL_2v2(i, j);
 			}
 		}
 		if (capital) {
-			// 2v2 dice roll
-			int j = 2;
-			DP(i - 0, j - 2) += (295.0 / 1296.0) * DP(i, j);
-			DP(i - 1, j - 1) += (420.0 / 1296.0) * DP(i, j);
-			DP(i - 2, j - 0) += (581.0 / 1296.0) * DP(i, j);
+			DICEROLL_2v2(i, 2);
 		}
-		{
-			// 2v1 dice roll
-			int j = 1;
-			DP(i - 0, j - 1) += (125.0 / 216.0) * DP(i, j);
-			DP(i - 1, j - 0) += ( 91.0 / 216.0) * DP(i, j);
-		}
+		DICEROLL_2v1(i, 1);
 	}
 	{
 		int i = 1;
 		for (int j = m; j >= 2 + capital; --j) {
 			if (capital) {
-				// 1v3 dice roll
-				DP(i - 0, j - 1) += (441.0 / 1296.0) * DP(i, j);
-				DP(i - 1, j - 0) += (855.0 / 1296.0) * DP(i, j);
+				DICEROLL_1v3(i, j);
 			} else {
-				// 1v2 dice roll
-				DP(i - 0, j - 1) += ( 91.0 / 216.0) * DP(i, j);
-				DP(i - 1, j - 0) += (125.0 / 216.0) * DP(i, j);
+				DICEROLL_1v2(i, j);
 			}
 		}
 		if (capital) {
-			// 1v2 dice roll
-			int j = 2;
-			DP(i - 0, j - 1) += ( 91.0 / 216.0) * DP(i, j);
-			DP(i - 1, j - 0) += (125.0 / 216.0) * DP(i, j);
+			DICEROLL_1v2(i, 2);
 		}
-		{
-			// 1v1 dice roll
-			int j = 1;
-			DP(i - 0, j - 1) += (15.0 / 36.0) * DP(i, j);
-			DP(i - 1, j - 0) += (21.0 / 36.0) * DP(i, j);
-		}
+		DICEROLL_1v1(i, 1);
 	}
 	
 	for (int i = 0; i <= n; ++i) {
@@ -235,6 +306,15 @@ BattleDistrib calc_battle_distrib(const BattleConfig *config) {
 	
 	free(dp);
 	#undef DP
+	#undef DICEROLL_3v3
+	#undef DICEROLL_3v2
+	#undef DICEROLL_3v1
+	#undef DICEROLL_2v3
+	#undef DICEROLL_2v2
+	#undef DICEROLL_2v1
+	#undef DICEROLL_1v3
+	#undef DICEROLL_1v2
+	#undef DICEROLL_1v1
 	
 	return distrib;
 }
@@ -400,6 +480,30 @@ void battle_distrib_apply_balance(BattleDistrib *distrib, const BalanceConfig *c
 	apply_win_outcome_power(distrib, config->win_outcome_power);
 }
 
+/*
+int main() {
+	RollDistrib dist[4][4];
+	for (int i = 3; i >= 1; --i) {
+		for (int j = 3; j >= 1; --j) {
+			dist[i][j] = calc_roll_distrib(i, j, 1);
+			printf("Zombies dice roll %dv%d:\n", i, j);
+			for (int k = dist[i][j].length - 1; k >= 0; --k) {
+				printf("  P(-%d, -%d) = %d.0 / %d.0\n", dist[i][j].outcomes[k].att_loss, dist[i][j].outcomes[k].def_loss, dist[i][j].counts[k], dist[i][j].counts_sum);
+			}
+		}
+	}
+	puts("");
+	for (int i = 3; i >= 1; --i) {
+		for (int j = 3; j >= 1; --j) {
+			dist[i][j] = calc_roll_distrib(i, j, 0);
+			printf("Normal dice roll %dv%d:\n", i, j);
+			for (int k = dist[i][j].length - 1; k >= 0; --k) {
+				printf("  P(-%d, -%d) = %d.0 / %d.0\n", dist[i][j].outcomes[k].att_loss, dist[i][j].outcomes[k].def_loss, dist[i][j].counts[k], dist[i][j].counts_sum);
+			}
+		}
+	}
+}
+*/
 /*
 int main() {
 	printf("10 vs 10 battle:\n");

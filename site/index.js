@@ -22,7 +22,7 @@ class RiskDice {
 		this.mod = mod;
 	}
 	
-	calcBattleDistrib(attacking, defending, capital, balanced) {
+	calcBattleDistrib(attacking, defending, capital, zombie, balanced) {
 		// Remember that in C ABI:
 		// - functions returning structs actually take a pointer to the output as the first argument
 		// - structs are always passed by pointer, only then copied by the callee
@@ -35,6 +35,7 @@ class RiskDice {
 		mod.setValue(battle_config + 0, attacking, "i32");
 		mod.setValue(battle_config + 4, defending, "i32");
 		mod.setValue(battle_config + 8, capital ? 1 : 0, "i32");
+		mod.setValue(battle_config + 12, zombie ? 1 : 0, "i32");
 		
 		let battle_distrib = mod._malloc_battle_distrib();
 		mod._calc_battle_distrib(battle_distrib, battle_config);
@@ -122,6 +123,7 @@ class TroopsNeededCalc {
 		this.inpDefending = document.getElementById(`${idPrefix}-defending`);
 		this.inpWanted = document.getElementById(`${idPrefix}-wanted`);
 		this.inpCapital = document.getElementById(`${idPrefix}-capital`);
+		this.inpZombie = document.getElementById(`${idPrefix}-zombie`);
 		this.inpBalanced = document.getElementById(`${idPrefix}-balanced`);
 		this.btnSubmit = document.getElementById(`${idPrefix}-submit`);
 		this.spanResult = document.getElementById(`${idPrefix}-result`);
@@ -172,6 +174,7 @@ class TroopsNeededCalc {
 		const defending = this.inpDefending.valueAsNumber;
 		const wanted = this.inpWanted.valueAsNumber;
 		const capital = this.inpCapital.checked;
+		const zombie = this.inpZombie.checked;
 		const balanced = this.inpBalanced.checked;
 		
 		// Binary search for the amount.
@@ -183,7 +186,7 @@ class TroopsNeededCalc {
 		
 		for (let i = 0; i < Math.log2(q) + 2; ++i) {
 			const attacking = Math.floor((p + q) / 2);
-			const result = this.dice.calcBattleDistrib(attacking, defending, capital, balanced);
+			const result = this.dice.calcBattleDistrib(attacking, defending, capital, zombie, balanced);
 			//console.log(p, q, Math.abs(result.attackerVictoryProb - wanted), result);
 			if (Math.abs(result.attackerVictoryProb - wanted) <= Number.EPSILON) {
 				q = attacking;
@@ -197,7 +200,7 @@ class TroopsNeededCalc {
 		// +1 for the troop left behind
 		this.spanResult.innerText = q + 1;
 		
-		const result = this.dice.calcBattleDistrib(q, defending, capital, balanced);
+		const result = this.dice.calcBattleDistrib(q, defending, capital, zombie, balanced);
 		
 		presentBattleChart(result, this.chartAtt, true);
 		presentBattleChart(result, this.chartDef, false);
@@ -214,6 +217,7 @@ class BattleCalc {
 		this.inpAttacking = document.getElementById(`${idPrefix}-attacking`);
 		this.inpDefending = document.getElementById(`${idPrefix}-defending`);
 		this.inpCapital = document.getElementById(`${idPrefix}-capital`);
+		this.inpZombie = document.getElementById(`${idPrefix}-zombie`);
 		this.inpBalanced = document.getElementById(`${idPrefix}-balanced`);
 		this.btnSubmit = document.getElementById(`${idPrefix}-submit`);
 		this.spanProb = document.getElementById(`${idPrefix}-prob`);
@@ -264,9 +268,10 @@ class BattleCalc {
 		const attacking = this.inpAttacking.valueAsNumber - 1;
 		const defending = this.inpDefending.valueAsNumber;
 		const capital = this.inpCapital.checked;
+		const zombie = this.inpZombie.checked;
 		const balanced = this.inpBalanced.checked;
 		
-		const result = this.dice.calcBattleDistrib(attacking, defending, capital, balanced);
+		const result = this.dice.calcBattleDistrib(attacking, defending, capital, zombie, balanced);
 		
 		this.spanProb.innerText = result.attackerVictoryProb;
 		
