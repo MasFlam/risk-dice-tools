@@ -1,5 +1,12 @@
 "use strict";
 
+function roundToString(probability) {
+	if (typeof(probability) != "number") {
+		return probability;
+	}
+	return `${Math.round(probability * 1000) / 1000}`;
+}
+
 function trimAlmostZeros(data) {
 	const n = data.length;
 	const maxprob = Math.max(...data);
@@ -93,7 +100,8 @@ function presentBattleChart(distrib, chart, isAttacking) {
 		y: {
 			ticks: {
 				callback: function (value, index, ticks) {
-					return Chart.Ticks.formatters.numeric.apply(this, [100 * value, index, ticks]) + "%";
+					//return Chart.Ticks.formatters.numeric.apply(this, [100 * value, index, ticks]) + "%";
+					return roundToString(100 * value) + "%";
 				},
 			},
 		},
@@ -220,8 +228,8 @@ class TroopsNeededCalc {
 		
 		const result = this.dice.calcBattleDistrib(q, defending, capital, zombie, balanced);
 		
-		this.spanAvgAtt.innerText = presentBattleChart(result, this.chartAtt, true);
-		this.spanAvgDef.innerText = presentBattleChart(result, this.chartDef, false);
+		this.spanAvgAtt.innerText = roundToString(presentBattleChart(result, this.chartAtt, true));
+		this.spanAvgDef.innerText = roundToString(presentBattleChart(result, this.chartDef, false));
 		
 		this.chartAtt.update();
 		this.chartDef.update();
@@ -293,10 +301,10 @@ class BattleCalc {
 		
 		const result = this.dice.calcBattleDistrib(attacking, defending, capital, zombie, balanced);
 		
-		this.spanProb.innerText = result.attackerVictoryProb;
+		this.spanProb.innerText = roundToString(100 * result.attackerVictoryProb) + "%";
 		
-		this.spanAvgAtt.innerText = presentBattleChart(result, this.chartAtt, true);
-		this.spanAvgDef.innerText = presentBattleChart(result, this.chartDef, false);
+		this.spanAvgAtt.innerText = roundToString(presentBattleChart(result, this.chartAtt, true));
+		this.spanAvgDef.innerText = roundToString(presentBattleChart(result, this.chartDef, false));
 		
 		this.chartAtt.update();
 		this.chartDef.update();
