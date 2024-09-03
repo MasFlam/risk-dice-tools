@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { AppBar, AppShell, LightSwitch } from "@skeletonlabs/skeleton";
-	import { onMount } from "svelte";
 	import "../app.postcss";
 </script>
 
@@ -37,7 +36,6 @@
 				>
 					Source Code
 				</a>
-				
 			</div>
 			<svelte:fragment slot="trail">
 				<LightSwitch />
