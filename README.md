@@ -26,7 +26,7 @@ Then you copy the build artifacts over to the source tree: (*I should automate t
 $ ./copy_to_lib.sh   # Needs to be run inside `/wasm`
 ```
 
-And finally build the whole Skeleton-base website, for which you need npm of something like that (comes with [Node.js](https://nodejs.org)):
+And finally build the whole website, for which you need npm of something like that (comes with [Node.js](https://nodejs.org)):
 
 ```
 $ cd ..
