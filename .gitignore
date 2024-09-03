@@ -1,6 +1,26 @@
-# emscripten build artifacts:
-site/riskdice.js
-site/riskdice.wasm
+# VSCode
+.vscode
 
-# deployment artifacts:
-website.tar.gz
+# Node
+package-lock.json
+node_modules
+
+# Output
+.output
+.vercel
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
