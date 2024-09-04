@@ -76,6 +76,12 @@
 			opponentStack = Math.max(opponentStack, 2);
 		}
 	}
+	
+	function onBalancedBlitzChange() {
+		if (!balancedBlitz) {
+			wantedProbPercent = Math.max(1, Math.min(99, wantedProbPercent));
+		}
+	}
 </script>
 
 <div
@@ -131,7 +137,7 @@
 		<SlideToggle name="toggle-zombies" bind:checked={defendingZombies}>
 			<div class="cursor-pointer">Zombies defending?</div>
 		</SlideToggle>
-		<SlideToggle name="toggle-balance" bind:checked={balancedBlitz}>
+		<SlideToggle name="toggle-balance" bind:checked={balancedBlitz} on:change={onBalancedBlitzChange}>
 			<div class="cursor-pointer">Balanced Blitz?</div>
 		</SlideToggle>
 		<SlideToggle name="toggle-balance" background="bg-cyan-600" active="bg-red-600" bind:checked={attackingSide} on:change={onSideChange}>
