@@ -70,6 +70,12 @@
 		stackNeeded = p;
 		distrib = distribTemp;
 	}
+	
+	function onSideChange() {
+		if (!attackingSide) {
+			opponentStack = Math.max(opponentStack, 2);
+		}
+	}
 </script>
 
 <div
@@ -97,6 +103,7 @@
 				<input
 					type="number"
 					class="input text-2xl px-4"
+					step="1"
 					min={attackingSide ? 1 : 2}
 					bind:value={opponentStack}
 				/>
@@ -108,7 +115,8 @@
 				<div class="input-group input-group-divider grid-cols-[1fr_auto]">
 					<input
 						type="number"
-						class="input text-2xl px-4"
+						class="text-2xl px-4"
+						step="1"
 						min={balancedBlitz ? 0 : 1}
 						max={balancedBlitz ? 100 : 99}
 						bind:value={wantedProbPercent}
@@ -117,23 +125,17 @@
 				</div>
 			</label>
 		</div>
-		<div class="cursor-pointer">
-			<SlideToggle name="toggle-capital" bind:checked={defendingCapital}>
-				Capital defending?
-			</SlideToggle>
-		</div>
-		<div class="cursor-pointer">
-			<SlideToggle name="toggle-zombies" bind:checked={defendingZombies}>
-				Zombies defending?
-			</SlideToggle>
-		</div>
-		<div class="cursor-pointer">
-			<SlideToggle name="toggle-balance" bind:checked={balancedBlitz}>
-				Balanced Blitz?
-			</SlideToggle>
-		</div>
-		<div class="cursor-pointer">
-			<SlideToggle name="toggle-balance" background="bg-cyan-600" active="bg-red-600" bind:checked={attackingSide}>
+		<SlideToggle name="toggle-capital" bind:checked={defendingCapital}>
+			<div class="cursor-pointer">Capital defending?</div>
+		</SlideToggle>
+		<SlideToggle name="toggle-zombies" bind:checked={defendingZombies}>
+			<div class="cursor-pointer">Zombies defending?</div>
+		</SlideToggle>
+		<SlideToggle name="toggle-balance" bind:checked={balancedBlitz}>
+			<div class="cursor-pointer">Balanced Blitz?</div>
+		</SlideToggle>
+		<SlideToggle name="toggle-balance" background="bg-cyan-600" active="bg-red-600" bind:checked={attackingSide} on:change={onSideChange}>
+			<div class="cursor-pointer">
 				I am
 				<b>
 					{#if attackingSide}
@@ -142,8 +144,8 @@
 						defending
 					{/if}
 				</b>
-			</SlideToggle>
-		</div>
+			</div>
+		</SlideToggle>
 		<button class="btn variant-filled-primary col-span-2" type="submit">Calculate</button>
 	</form>
 	<hr />

@@ -94,6 +94,7 @@
 				<input
 					type="number"
 					class="input text-2xl px-4"
+					step="1"
 					min="2"
 					bind:value={attackingStack}
 				/>
@@ -105,26 +106,21 @@
 				<input
 					type="number"
 					class="input text-2xl px-4"
+					step="1"
 					min="1"
 					bind:value={defendingStack}
 				/>
 			</label>
 		</div>
-		<div class="cursor-pointer">
-			<SlideToggle name="toggle-capital" bind:checked={defendingCapital}>
-				Capital defending?
-			</SlideToggle>
-		</div>
-		<div class="cursor-pointer">
-			<SlideToggle name="toggle-zombies" bind:checked={defendingZombies}>
-				Zombies defending?
-			</SlideToggle>
-		</div>
-		<div class="cursor-pointer">
-			<SlideToggle name="toggle-balance" bind:checked={balancedBlitz}>
-				Balanced Blitz?
-			</SlideToggle>
-		</div>
+		<SlideToggle name="toggle-capital" bind:checked={defendingCapital}>
+			<div class="cursor-pointer">Capital defending?</div>
+		</SlideToggle>
+		<SlideToggle name="toggle-zombies" bind:checked={defendingZombies}>
+			<div class="cursor-pointer">Zombies defending?</div>
+		</SlideToggle>
+		<SlideToggle name="toggle-balance" bind:checked={balancedBlitz}>
+			<div class="cursor-pointer">Balanced Blitz?</div>
+		</SlideToggle>
 		<button class="btn variant-filled-primary" type="submit">Calculate</button>
 	</form>
 	<hr />
