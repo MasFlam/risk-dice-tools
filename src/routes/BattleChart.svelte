@@ -74,7 +74,7 @@
 			tooltip: {
 				callbacks: {
 					label: function (ctx: TooltipItem<"line">) {
-						return formatPercentage(ctx.parsed.y);
+						return formatPercentage(Math.abs(ctx.parsed.y));
 					},
 				},
 			},

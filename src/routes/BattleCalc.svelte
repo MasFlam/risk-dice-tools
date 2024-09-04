@@ -8,6 +8,10 @@
 	$: attackerVictoryProb = null as number | null;
 	$: attackerDamageAvg = null as number | null;
 	$: defenderDamageAvg = null as number | null;
+	
+	$: isVictoryProbExact = attackerVictoryProb !== null
+		&& balancedBlitz
+		&& (attackerVictoryProb < 0.000_000_001 || attackerVictoryProb > 0.999_999_999);
 
 	let attackingStack: number = 2;
 	let defendingStack: number = 1;
@@ -128,7 +132,7 @@
 		<div class="text-center">Probability of attacker victory:</div>
 		<div class="text-2xl text-center font-bold">
 			{#if attackerVictoryProb !== null}
-				{(attackerVictoryProb * 100).toFixed(0)}%
+				{#if !isVictoryProbExact}&asymp;{/if}{(attackerVictoryProb * 100).toFixed(0)}%
 			{:else}
 				&mdash;
 			{/if}
