@@ -34,7 +34,7 @@
 		let q = 5 * opponentStack;
 		let distribTemp: BattleDistrib | null = null;
 
-		while (p < q) {
+		while (true) {
 			const ourStack = Math.floor((p + q) / 2);
 			distribTemp = riskdice.calculateBattle(
 				{
@@ -45,6 +45,8 @@
 				},
 				balancedBlitz
 			);
+			
+			if (p >= q) break;
 
 			if (!distribTemp) {
 				stackNeeded = null;
@@ -58,6 +60,14 @@
 				const victoryProbDef = distribTemp.attackerDamageProbs[natt];
 
 				const victoryProb = roundProb(attackingSide ? victoryProbAtt : victoryProbDef);
+				
+				console.log("====================");
+				console.log(`p=${p}, q=${q}`);
+				console.log(`our=${ourStack}, opponent=${opponentStack}`);
+				console.log(distribTemp);
+				console.log(`P(att vic) = ${victoryProbAtt}`);
+				console.log(`P(def vic) = ${victoryProbDef}`);
+				console.log(`rounded victory prob = ${victoryProb}`);
 				
 				if (victoryProb < wantedProb) {
 					p = ourStack + 1;
